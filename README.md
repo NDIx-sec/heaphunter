@@ -4,7 +4,7 @@ Scraping heapdump.hprof files to extract juicy infos
 🦅 Heapdump Hunter Usage:
 --------------------------
 ```
-python hunter.py [heapdump.hprof] [options]
+python heap_hunter.py [heapdump.hprof] [options]
 ```
 
 Options:<br/>
