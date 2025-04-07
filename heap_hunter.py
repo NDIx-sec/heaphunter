@@ -93,6 +93,7 @@ Examples:
   python hunter.py heapdump.hprof --sha256-only
 """)
 
+
 def is_likely_garbage(match, source_key):
     if len(match) > 50:
         return True
@@ -474,6 +475,32 @@ def generate_html_report(findings, output_prefix="heapdump", report_dir="report"
                     f.write(f"<strong>Type:</strong> <span class='match'>{escape(fnd['type'])}</span><br>")
                     f.write(f"<strong>Match:</strong> <code>{escape(fnd['match'])}</code><br>")
                     f.write(f"<strong>Context:</strong> <code>{escape(fnd['line'])}</code><br>")
+                    # ✅ JWT Header + Payload dekódolás
+                    if fnd['type'] == 'jwt':
+                        def decode_jwt_parts_inline(jwt_str):
+                            try:
+                                parts = jwt_str.split(".")
+                                if len(parts) < 2:
+                                    return None, None
+                                header = base64.urlsafe_b64decode(pad_base64(parts[0])).decode('utf-8', errors='ignore')
+                                payload = base64.urlsafe_b64decode(pad_base64(parts[1])).decode('utf-8', errors='ignore')
+                                return header, payload
+                            except Exception:
+                                return None, None
+
+                        header, payload = decode_jwt_parts_inline(fnd['match'])
+                        if header:
+                            try:
+                                header_json = json.dumps(json.loads(header), indent=4, ensure_ascii=False)
+                                f.write("<strong>📄 Header:</strong><pre class='json'>" + escape(header_json) + "</pre>")
+                            except:
+                                f.write("<strong>📄 Header (raw):</strong><pre>" + escape(header) + "</pre>")
+                        if payload:
+                            try:
+                                payload_json = json.dumps(json.loads(payload), indent=4, ensure_ascii=False)
+                                f.write("<strong>📦 Payload:</strong><pre class='json'>" + escape(payload_json) + "</pre>")
+                            except:
+                                f.write("<strong>📦 Payload (raw):</strong><pre>" + escape(payload) + "</pre>")
 
                     if fnd.get('base64_decoded'):
                         f.write("<strong>Base64 Decoded:</strong>")
@@ -519,45 +546,107 @@ def generate_html_report(findings, output_prefix="heapdump", report_dir="report"
         f.write("</body></html>")
     print(f"✅ Wrote report: {decrypted_report}")
 
-    # === Index riport generálása + stat + kereső ===
+# === Index riport generálása + stat + kereső ===
     index_path = path_join(REPORT_DIR, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
-        f.write("<html><head><meta charset='utf-8'><style>")
-        f.write("body{font-family:Arial;background:#0d1117;color:#c9d1d9;padding:40px;}")
-        f.write("a{display:block;margin:8px 0;font-size:18px;color:#58a6ff;text-decoration:none;}")
-        f.write("input{margin-bottom:20px;padding:8px;width:300px;border:1px solid #333;background:#161b22;color:#f0f0f0;}")
-        f.write("</style>")
-        f.write("<script>")
         f.write("""
-            function filterLinks() {
-                const input = document.getElementById('search').value.toLowerCase();
-                const links = document.querySelectorAll('.report-link');
-                links.forEach(link => {
-                    if (link.innerText.toLowerCase().includes(input)) {
-                        link.style.display = 'block';
-                    } else {
-                        link.style.display = 'none';
-                    }
-                });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🦅 Heapdump Hunter Dashboard</title>
+  <style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        padding: 40px;
+        line-height: 1.6;
+    }
+    h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    h2 {
+        margin-top: 30px;
+    }
+    input[type="text"] {
+        margin-top: 10px;
+        padding: 8px;
+        width: 320px;
+        border: 1px solid #333;
+        background-color: #161b22;
+        color: #f0f0f0;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+    }
+    .card {
+        background-color: #21262d;
+        padding: 12px 16px;
+        border-left: 4px solid #58a6ff;
+        border-radius: 4px;
+        font-size: 15px;
+    }
+    .report-link {
+        display: block;
+        padding: 6px 12px;
+        background-color: #21262d;
+        border-left: 4px solid #58a6ff;
+        color: #58a6ff;
+        text-decoration: none;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+    .report-link:hover {
+        background-color: #30363d;
+    }
+  </style>
+  <script>
+    function filterLinks() {
+        const input = document.getElementById('search').value.toLowerCase();
+        const links = document.querySelectorAll('.report-link, .card');
+        links.forEach(link => {
+            if (link.innerText.toLowerCase().includes(input)) {
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
             }
-        """)
-        f.write("</script></head><body>")
-        f.write("<h1>🗂️ Heapdump Hunter Report Index</h1>")
-        f.write("<input id='search' type='text' placeholder='🔍 Search report type...' onkeyup='filterLinks()'>")
+        });
+    }
+  </script>
+</head>
+<body>
 
-        f.write("<h2>📊 Report Summary</h2><ul>")
+  <h1>🗂️ Heapdump Hunter Report Index</h1>
+  <input id="search" type="text" placeholder="🔍 Search reports..." onkeyup="filterLinks()">
+
+  <h2>📊 Report Summary</h2>
+  <div class="grid">
+""")
+
+        # Summary cards
         for label, fname in report_links:
             count = len(grouped.get(label, [])) if label in grouped else len(decrypted_only)
-            f.write(f"<li>{label.title()} ➜ {count} entries</li>")
-        f.write("</ul>")
+            f.write(f"<div class='card'><strong>{label.title()}</strong><br>{count} entries</div>\n")
 
-        f.write("<h2>📁 Reports</h2>")
+        f.write("""</div>
+  <h2>📁 Reports</h2>
+  <div class="grid">
+""")
+
+        # Report links
         for label, fname in report_links:
-            relative_name = Path(fname).name  # csak a fájlnév, mappa nélkül
-            f.write(f"<a class='report-link' href='{relative_name}' target='_blank'>🗂️ {label.title()} report</a>")
+            relative_name = Path(fname).name
+            f.write(f"<a class='report-link' href='{relative_name}' target='_blank'>🧾 {label.title()} Report</a>\n")
 
+        f.write("</div></body></html>")
 
-        f.write("</body></html>")
 
 
     print("✅ Wrote index: index.html")
