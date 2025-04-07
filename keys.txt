@@ -1,0 +1,10 @@
+secret
+123456
+jwtsecret
+springbootkey
+supersecurekey123
+myjwtkey
+helloworld
+admin
+password
+tokenkey
