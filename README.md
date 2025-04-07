@@ -39,7 +39,7 @@ These keys will be used to try decrypting Base64 strings found in the heapdump.
 
 Examples:
 ```
-  python hunter.py heapdump.hprof
-  python hunter.py heapdump.hprof --extract-only
-  python hunter.py heapdump.hprof --sha256-only
+  python heap_hunter.py heapdump.hprof
+  python heap_hunter.py heapdump.hprof --extract-only
+  python heap_hunter.py heapdump.hprof --sha256-only
 ```
