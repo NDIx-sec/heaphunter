@@ -1,6 +1,4 @@
-# hunter_fixed.py
-# 🔧 Javított verzió – 2025.04.07 – Arcanum Cyber
-
+# NDIx
 import re
 import base64
 import json
