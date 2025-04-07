@@ -22,7 +22,7 @@ Defaults:
   - All reports and exports are saved to the ./report/ folder
   - Output includes per-type HTML reports + index.html dashboard
 
-🔐 keys.txt – AES brute kulcslista:
+🔐 keys.txt – AES brute key list:
 -----------------------------------
 Place your common AES decryption keys (for Base64 blobs) in a keys.txt file.
 One key per line.
