@@ -3,11 +3,12 @@ Scraping heapdump.hprof files to extract juicy infos
 
 🦅 Heapdump Hunter Usage:
 --------------------------
-
-python hunter.py [heapdump.hprof] [options]
-
 ```
+python hunter.py [heapdump.hprof] [options]
+```
+
 Options:<br/>
+```
   --extract-only    Only export sha256 / jwt / bcrypt / md5 hashes to .txt<br/>
   --html-only       Only generate HTML reports (no .txt exports)<br/>
   --jwt-only        Only generate report for JWT tokens<br/>
