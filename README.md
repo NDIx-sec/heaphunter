@@ -26,7 +26,7 @@ HeapHunter is a powerful Python-based tool designed to analyze Java heap dump fi
 
 1. Clone the project:
 ```bash
-git clone https://github.com/yourusername/heaphunter.git
+git clone https://github.com/NDIx-sec/heaphunter.git
 cd heaphunter
 ```
 
@@ -40,7 +40,7 @@ pip install pycryptodome psutil
 ### Basic Usage
 
 ```bash
-python main.py heapdump.hprof
+python heaphunter.py heapdump.hprof
 ```
 
 This analyzes the heap dump and creates all types of reports.
@@ -48,7 +48,7 @@ This analyzes the heap dump and creates all types of reports.
 ### Switches and Options
 
 ```bash
-python main.py [heapdump.hprof] [options]
+python heaphunter.py [heapdump.hprof] [options]
 ```
 
 Options:
@@ -63,15 +63,8 @@ Options:
 - `--sequential`: Disable parallel processing (for debugging or low-memory systems)
 - `--help`: Show help and exit
 
-### Optimized Version
 
-For even more efficient operation, use the optimized version:
-
-```bash
-python optimized_main.py heapdump.hprof
-```
-
-The optimized version automatically selects the most efficient processing method based on file size and system capabilities.
+Thi version automatically selects the most efficient processing method based on file size and system capabilities.
 
 ### AES Decoding
 
@@ -88,17 +81,17 @@ springbootkey
 
 The project has a modular structure which improves code readability and maintainability:
 
-### main.py / optimized_main.py
+### main.py / heaphunter.py
 - Entry point of the program
 - Processes command line arguments
 - Initializes and runs the HeapHunter / OptimizedHeapHunter class
 
-### extractor.py / optimized_extractor.py
+### extractor.py / extractor.py
 - Extracts strings from the heap dump
 - The optimized version supports buffered, mmap, and parallel reading modes
 - Reads configuration (AES keys from the `keys.txt` file)
 
-### analyzer.py / optimized_analyzer.py
+### analyzer.py / analyzer.py
 - Analyzes the extracted strings to identify various sensitive information
 - Applies different search strategies (pattern matching, contextual search, key-value pairs)
 - The optimized version uses parallel processing and context-aware indexing
@@ -108,18 +101,6 @@ The project has a modular structure which improves code readability and maintain
 - Creates an interactive dashboard to overview the findings
 - Formats and organizes findings by type
 
-### utils.py / improved_utils.py
-- Basic utility functions (Base64 decoding, JWT decoding, AES decryption)
-- Regular expressions and filters for recognizing different sensitive information
-- Advanced filtering techniques to reduce false positives
-
-## Advanced Filtering Techniques
-
-HeapHunter applies advanced filtering methods to minimize false positives, with special attention to Java-specific artifacts. The `improved_utils.py` module contains these techniques:
-
-- Recognition and filtering of Java type patterns (e.g., "Lorg/hibernate", "java.util")
-- Credential format validation (character set, length, complexity)
-- Context-based filtering to identify real passwords and tokens
 
 ## Reports
 
@@ -134,17 +115,17 @@ After analysis, the program generates several reports in the `report_[heapdump_n
 
 ### Default analysis:
 ```bash
-python main.py heapdump.hprof
+python heaphunter.py heapdump.hprof
 ```
 
 ### Analyze only JWT tokens with memory-mapped method:
 ```bash
-python optimized_main.py heapdump.hprof --jwt-only --method mmap
+python heaphunter.py heapdump.hprof --jwt-only --method mmap
 ```
 
 ### Extract only hashes to text files:
 ```bash
-python main.py heapdump.hprof --extract-only
+python heaphunter.py heapdump.hprof --extract-only
 ```
 
 ## Performance Optimization
@@ -166,4 +147,3 @@ python main.py heapdump.hprof --extract-only
 ## Author
 
 Original author: NDIx
-Optimized version: [Your name]
