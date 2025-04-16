@@ -81,17 +81,17 @@ springbootkey
 
 The project has a modular structure which improves code readability and maintainability:
 
-### main.py / heaphunter.py
+### heaphunter.py
 - Entry point of the program
 - Processes command line arguments
 - Initializes and runs the HeapHunter / OptimizedHeapHunter class
 
-### extractor.py / extractor.py
+### extractor.py
 - Extracts strings from the heap dump
 - The optimized version supports buffered, mmap, and parallel reading modes
 - Reads configuration (AES keys from the `keys.txt` file)
 
-### analyzer.py / analyzer.py
+### analyzer.py
 - Analyzes the extracted strings to identify various sensitive information
 - Applies different search strategies (pattern matching, contextual search, key-value pairs)
 - The optimized version uses parallel processing and context-aware indexing
