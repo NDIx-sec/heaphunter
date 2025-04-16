@@ -134,6 +134,18 @@ python heaphunter.py heapdump.hprof --extract-only
 - On systems with very limited memory, use the `--method buffered --sequential` combination
 - The optimized version automatically adapts to the file size and available resources
 
+
+## Future Plans
+
+### Advanced Filtering Techniques
+One of the key future improvements planned for HeapHunter is the implementation of advanced filtering techniques to minimize false positives:
+
+- Recognition and filtering of Java type patterns (e.g., "Lorg/hibernate", "java.util")
+- Credential format validation (character set, length, complexity)
+- Context-based filtering to identify real passwords and tokens
+- Weighted scoring system for potential credentials to reduce false positives
+
+
 ## Troubleshooting
 
 - **"Error: Heap dump file not found"**: Check the file path
