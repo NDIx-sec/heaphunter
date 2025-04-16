@@ -158,4 +158,4 @@ One of the key future improvements planned for HeapHunter is the implementation 
 
 ## Author
 
-Original author: NDIx
+Developed by NDIx
