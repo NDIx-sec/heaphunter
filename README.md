@@ -64,7 +64,7 @@ Options:
 - `--help`: Show help and exit
 
 
-Thi version automatically selects the most efficient processing method based on file size and system capabilities.
+This version automatically selects the most efficient processing method based on file size and system capabilities.
 
 ### AES Decoding
 
